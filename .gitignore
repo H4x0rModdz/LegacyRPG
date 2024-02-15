@@ -1,0 +1,27 @@
+# Arquivos de compilação
+bin/
+obj/
+
+# Arquivos de log e arquivos temporários
+*.log
+*.logs
+*.temp
+
+# Arquivos de configuração do Visual Studio
+.vs/
+.vscode/
+*.suo
+*.user
+*.sln.docstates
+
+# Dependências do NuGet
+packages/
+
+# Cache do ReSharper
+_ReSharper.*
+
+# Arquivos de configuração do Rider
+.idea/
+
+# Arquivos de configuração do Visual Studio Code
+.vscode/
