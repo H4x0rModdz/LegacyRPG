@@ -11,7 +11,18 @@ namespace LegacyRPG.Application.Start
         {
             Console.WriteLine("Welcome to LegacyRPG!");
             Player player = CreateCharacter();
-            StartAdventure(player);
+            bool continueGame = true;
+            while (player.Health > 0)
+            {
+                StartAdventure(player);
+
+                if (player.Health > 0)
+                {
+                    Console.WriteLine("Do you want to continue? (Y/N)");
+                    string input = Console.ReadLine();
+                    continueGame = input.Equals("Y", StringComparison.OrdinalIgnoreCase);
+                }
+            }
         }
 
         private Player CreateCharacter()
@@ -80,7 +91,7 @@ namespace LegacyRPG.Application.Start
             return player;
         }
 
-       private bool IsNameValid(string name) => !string.IsNullOrWhiteSpace(name) && Regex.IsMatch(name, @"^[a-zA-Z]+$");
+        private bool IsNameValid(string name) => !string.IsNullOrWhiteSpace(name) && Regex.IsMatch(name, @"^[a-zA-Z]+$");
 
         private string GetClassName(int classChoice)
         {
@@ -101,12 +112,12 @@ namespace LegacyRPG.Application.Start
 
         private void StartAdventure(Player player)
         {
-            Console.WriteLine("You embark on your journey! May fortune favor you.");
             Console.WriteLine("You find yourself in a dense forest...");
 
             Random random = new Random();
             if (random.Next(1, 11) <= 5)
             {
+                Console.WriteLine("You embark on your journey! May fortune favor you.");
                 Console.WriteLine("Suddenly, you encounter an enemy!");
 
                 Enemy enemy = GenerateRandomEnemy();
