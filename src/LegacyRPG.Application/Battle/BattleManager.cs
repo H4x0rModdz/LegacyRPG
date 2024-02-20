@@ -1,4 +1,5 @@
 ﻿using LegacyRPG.Domain.Models;
+using LegacyRPG.Infrastructure;
 
 namespace LegacyRPG.Application.Battle
 {
@@ -6,6 +7,9 @@ namespace LegacyRPG.Application.Battle
     {
         private const double SuccessPercentage = 0.5;
         private const int MaxInvalidChoices = 3;
+        private readonly SqlServerDb _db;
+
+        public BattleManager(SqlServerDb db) => _db = db;
 
         public void StartBattle(Player player, Enemy enemy)
         {
@@ -93,6 +97,16 @@ namespace LegacyRPG.Application.Battle
         {
             Console.WriteLine($"{enemy.Name} wins the battle!");
             player.Reset();
+
+            try
+            {
+                _db.DeletePlayer(player.Id);
+                Console.WriteLine($"Player {player.Name} defeated and removed from the database.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error handling defeat: {ex.Message}");
+            }
         }
     }
 }

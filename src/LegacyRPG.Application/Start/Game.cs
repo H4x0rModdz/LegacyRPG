@@ -1,12 +1,17 @@
 ﻿using LegacyRPG.Application.Battle;
 using LegacyRPG.Domain.Models;
 using LegacyRPG.Domain.Models.Enemies;
+using LegacyRPG.Infrastructure;
 using System.Text.RegularExpressions;
 
 namespace LegacyRPG.Application.Start
 {
     public class Game
     {
+        private readonly SqlServerDb _db;
+
+        public Game() => _db = new SqlServerDb();
+
         public void StartGame()
         {
             Console.WriteLine("Welcome to LegacyRPG!");
@@ -35,6 +40,7 @@ namespace LegacyRPG.Application.Start
                 playerName = Console.ReadLine();
             } while (!IsNameValid(playerName));
 
+            Console.Clear();
             Console.WriteLine($"Ok, {playerName}, Choose your class:");
             Console.WriteLine("1. Warrior");
             Console.WriteLine("2. Healer");
@@ -86,10 +92,28 @@ namespace LegacyRPG.Application.Start
                     break;
             }
 
+            Console.Clear();
+            _db.CreateDatabase();
+
+            AddPlayerToDb(player);
+
             Console.WriteLine($"Welcome, {player.Name}! Your adventure begins now as a {GetClassName(classChoice)}.");
             Console.WriteLine($"Character stats:\nHealth: {player.Health}\nAttack: {player.Attack}\nDefense: {player.Defense}\nLevel: {player.Level}\nExperience: {player.Experience}\nGold: {player.Gold}");
             return player;
         }
+
+        private void AddPlayerToDb(Player player)
+        {
+            try
+            {
+                _db.InsertPlayer(player);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error adding player to the database: {ex.Message}");
+            }
+        }
+
 
         private bool IsNameValid(string name) => !string.IsNullOrWhiteSpace(name) && Regex.IsMatch(name, @"^[a-zA-Z]+$");
 
@@ -122,7 +146,7 @@ namespace LegacyRPG.Application.Start
 
                 Enemy enemy = GenerateRandomEnemy();
 
-                BattleManager battleManager = new BattleManager();
+                BattleManager battleManager = new BattleManager(_db);
                 battleManager.StartBattle(player, enemy);
             }
 
